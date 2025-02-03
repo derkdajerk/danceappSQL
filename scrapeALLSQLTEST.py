@@ -2,7 +2,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 import mysql.connector
+import time
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
+start = time.time()
 #connect to sql database
 #EXTRA TEST
 mydb = mysql.connector.connect(
@@ -19,14 +23,16 @@ def safe_find(element, xpath, default="N/A"):
         return element.find_element(By.XPATH, xpath).text
     except NoSuchElementException:
         return default
-    
+
 def scrape(url):
+    start = time.time()
     op = webdriver.ChromeOptions()
     op.add_argument('headless')
+    op.page_load_strategy = 'eager'
     op.add_argument('--log-level=3')
     driver = webdriver.Chrome(options=op) # COMMENT OUT IF NEED TO FIND XCODE
     driver.get(url)
-    driver.implicitly_wait(3)
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//div[contains(@class, "columns is-vcentered ClassTimeScheduleItemDesktop_separator__1vvuL")]')))
     try: # Locate all class containers
         elements = driver.find_elements(By.XPATH, '//div[contains(@class, "columns is-vcentered ClassTimeScheduleItemDesktop_separator__1vvuL")]')
     except NoSuchElementException:
@@ -44,28 +50,61 @@ def scrape(url):
         Instructor = safe_find(element, './/a[contains(@class, "ClassTimeScheduleItemDetails_link__1gju5")]')
         Price = safe_find(element, './/p[contains(@class, "Price_price__295Er Price_priceFont__1nZCw")]')
         Time = safe_find(element, './/h5[contains(@class, "has-text-primary is-marginless")]')
-        Length = safe_find(element, './/p[contains(@class, "ClassTimeScheduleItemDesktop_endTime__26mcG")]', "N/A")
+        Length = safe_find(element, './/p[contains(@class, "ClassTimeScheduleItemDesktop_endTime__26mcG")]', "N/A").replace("(", "").replace(")", "")
         
-        class_item = {
-            'Class Name': className,
-            'Instructor': Instructor,
-            'Price': Price,
-            'Time': Time,
-            'Length': Length,
-            'Date': Date
-        }
+        class_item = (
+            className,
+            Instructor,
+            Price,
+            Time,
+            Length,
+            Date
+        )
         class_list.append(class_item)
-    for Class in class_list:
-        print(Class)
-        print()
+    print(class_list)
+    end = time.time()
+    length = end - start
+    # Show the results : this can be altered however you like
+    print("\nIt took", length, "seconds!")
+    return class_list
 
+mycursor.execute("DELETE FROM mdc")
+mycursor.execute("DELETE FROM ml")
+mycursor.execute("DELETE FROM tmilly")
+mydb.commit()  # Commit the changes to the database
 tmilly = 'https://www.mindbodyonline.com/explore/locations/tmilly-studio'
 mL = 'https://www.mindbodyonline.com/explore/locations/movement-lifestyle-noho'
 mdc = 'https://www.mindbodyonline.com/explore/locations/millennium-dance-complex-studio-city'
 
+val = scrape(tmilly)
+val2 = scrape(mL)
+val3 = scrape(mdc)
+
+sql = "INSERT INTO tmilly (classname, instructor, price, time, length, date) VALUES (%s, %s, %s, %s, %s, %s)"
+sql2 = "INSERT INTO ml (classname, instructor, price, time, length, date) VALUES (%s, %s, %s, %s, %s, %s)"
+sql3 = "INSERT INTO mdc (classname, instructor, price, time, length, date) VALUES (%s, %s, %s, %s, %s, %s)"
+
 print("Scraping TMilly:")
-scrape(tmilly)
+mycursor.executemany(sql, val)
 print("Scraping ML:")
-scrape(mL)
+mycursor.executemany(sql2, val2)
 print("Scraping MDC:")
-scrape(mdc)
+mycursor.executemany(sql3, val2)
+
+mydb.commit()
+
+print(mycursor.rowcount, "was inserted.")
+
+print("1 record inserted, ID:", mycursor.lastrowid)
+
+mycursor.execute("SELECT * FROM tmilly")
+
+myresult = mycursor.fetchall()
+
+for x in myresult:
+    print(x)
+    
+end = time.time()
+length = end - start
+# Show the results : this can be altered however you like
+print("\nIt took in total", length, "seconds!")
