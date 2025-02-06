@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from searchQueries import search_by_time_window
 
 start = time.time()
 #connect to sql database
@@ -97,6 +98,8 @@ for url, sql in websites:
     mycursor.executemany(sql, class_data)
     print(f"Completed {url.split('/')[-1]}:")
 
+
+mydb.commit()
 print("\nAll operations completed")
 
 print(f"{mycursor.rowcount} records inserted.")
@@ -104,3 +107,6 @@ print(f"{mycursor.rowcount} records inserted.")
 
 end = time.time()
 print(f"\nTotal execution time: {end - start} seconds")
+
+# Example usage
+search_by_time_window('8:00 PM', '9:00 PM')
