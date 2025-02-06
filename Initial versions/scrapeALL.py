@@ -46,7 +46,7 @@ def scrape(url):
         class_list.append(class_item)
     for Class in class_list:
         class_name = Class['Class Name']
-        print(class_name)
+        print(Class)
         print()
 
 tmilly = 'https://www.mindbodyonline.com/explore/locations/tmilly-studio'
