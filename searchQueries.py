@@ -18,15 +18,19 @@ def create_connection():
         )
         if mydb.is_connected():
             print("Successfully connected to MySQL database")
-            return mydb.cursor()
+            return mydb, mydb.cursor()
     except Error as e:
         print(f"Error while connecting to MySQL: {e}")
         return None
 
 # Create a connection instance
-mycursor = create_connection()
+mydb, mycursor = create_connection()
 
 def search_by_time_window(start_time, end_time):
+    if not mycursor or not mydb.is_connected():
+        print("No database connection")
+        return
+    
     table_names = ['tmilly', 'mdc', 'ml']
     all_results = {}
     date = None
@@ -74,4 +78,4 @@ def search_by_time_window(start_time, end_time):
         print(f"Error executing query: {e}")
         return
 
-search_by_time_window('8:00 PM', '9:00 PM')
+search_by_time_window('8:00 AM', '9:00 PM')

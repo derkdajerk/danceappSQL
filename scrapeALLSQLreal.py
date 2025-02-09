@@ -1,4 +1,5 @@
 # took 17-20 seconds for just the 3 scrapes alone to run like this
+import mysql
 import mysql.connector
 import time
 from selenium import webdriver
@@ -6,7 +7,6 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from searchQueries import search_by_time_window
 
 start = time.time()
 #connect to sql database
@@ -27,6 +27,7 @@ def safe_find(element, xpath, default="N/A"):
         return default
 
 def scrape(driver, url):
+    print("test")
     start = time.time()
     print(f"\nScraping {url}")
     driver.get(url)
@@ -84,29 +85,34 @@ websites = [
 for table in ["mdc", "ml", "tmilly"]:
     mycursor.execute(f"DELETE FROM {table}")
     mycursor.execute(f"ALTER TABLE {table} AUTO_INCREMENT = 1")
+    
 mydb.commit()
 
-op = webdriver.ChromeOptions()
-op.add_argument('headless')
-op.page_load_strategy = 'none'
-op.add_argument('--log-level=3')
-driver = webdriver.Chrome(options=op)  # COMMENT OUT IF NEED TO FIND XCODE
+try:
+    op = webdriver.ChromeOptions()
+    op.add_argument('headless')
+    op.page_load_strategy = 'none'
+    op.add_argument('--log-level=3')
+    driver = webdriver.Chrome(options=op)
 
-for url, sql in websites:
-    class_data = scrape(driver, url)
-    print(f"Entering data for {url}")
-    mycursor.executemany(sql, class_data)
-    print(f"Completed {url.split('/')[-1]}:")
+    for url, sql in websites:
+        try:
+            class_data = scrape(driver, url)
+            print(f"Entering data for {url}")
+            mycursor.executemany(sql, class_data)
+            print(f"Completed {url.split('/')[-1]}:")
+        except Exception as e:
+            print(f"Error processing {url}: {str(e)}")
 
+    mydb.commit()
+    print("\nAll operations completed")
+    print(f"{mycursor.rowcount} records inserted.")
 
-mydb.commit()
-print("\nAll operations completed")
-
-print(f"{mycursor.rowcount} records inserted.")
-
-
+finally:
+    # Clean up resources
+    driver.quit()
+    mycursor.close()
+    mydb.close()
+    
 end = time.time()
 print(f"\nTotal execution time: {end - start} seconds")
-
-# Example usage
-search_by_time_window('8:00 PM', '9:00 PM')
