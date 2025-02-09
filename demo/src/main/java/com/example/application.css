@@ -1,0 +1,45 @@
+.button {
+    -fx-background-color: 
+        #3c7fb1,
+        linear-gradient(#fafdfe, #e8f5fc),
+        linear-gradient(#eaf6fd 0.0%, #d9f0fc 49.0%, #bee6fd 50.0%, #a7d9f5 100.0%);
+    -fx-background-insets: 0.0,1.0,2.0;
+    -fx-background-radius: 3.0,2.0,1.0;
+    -fx-padding: 3.0 10.0 3.0 10.0;
+    -fx-text-fill: black;
+    -fx-font-size: 12.0px;
+}
+.text-area {
+    -fx-font-family: Consolas;
+    -fx-font-size: 15.0;
+    -fx-text-fill: #000000;
+    -fx-display-caret:true;
+}
+.text-area .content {
+    -fx-background-color: #f4dea8;
+}
+.label {
+	-fx-font: normal bold 12.0px verdana;
+}
+.pane {
+    -fx-background-color: #8fbc8f;
+}
+.grid {
+    -fx-background-color: blue;
+    -fx-background-radius: 5.0;
+    -fx-background-insets: 0.0 5.0 0.0 5.0;
+    -fx-padding: 10.0;
+    -fx-hgap: 10.0;
+    -fx-vgap: 10.0;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab:top {
+	-fx-pref-width: 145;
+    -fx-border-color: #a3a7a8;
+  	-fx-font: normal 12.0px verdana;
+    -fx-border-radius: 5.0 5.0 0.0 0.0;
+    -fx-background-color: #ACC8E5;
+    -fx-pref-height: 30.0px;  
+    -fx-background-insets: 0.0;
+}
+
+
