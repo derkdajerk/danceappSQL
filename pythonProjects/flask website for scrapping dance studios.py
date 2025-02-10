@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+import os
 
 app = Flask(__name__)
 
@@ -79,4 +80,4 @@ def scrape_selected():
     return render_template('results.html', results=results)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
