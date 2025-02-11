@@ -1,14 +1,74 @@
 .button {
-    -fx-background-color: 
-        #3c7fb1,
-        linear-gradient(#fafdfe, #e8f5fc),
-        linear-gradient(#eaf6fd 0.0%, #d9f0fc 49.0%, #bee6fd 50.0%, #a7d9f5 100.0%);
+    -fx-background-color: #868686;
     -fx-background-insets: 0.0,1.0,2.0;
     -fx-background-radius: 3.0,2.0,1.0;
     -fx-padding: 3.0 10.0 3.0 10.0;
-    -fx-text-fill: black;
-    -fx-font-size: 12.0px;
+    -fx-text-fill: white;
+    -fx-font-size: 13.0px;
 }
+.button:pressed {
+    -fx-background-color: #4d4d4d;
+    -fx-background-insets: 2.0,1.0,0.0;
+    -fx-padding: 4.0 10.0 2.0 10.0;
+    padding: 4px 10px 2px 10px;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 3);
+}
+.time-label {
+    -fx-text-fill: #2196F3;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.class-label {
+    -fx-text-fill: #4CAF50;
+    -fx-font-size: 13px;
+}
+
+.length-label {
+    -fx-text-fill: #FF9800;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.instructor-label {
+    -fx-text-fill: #9C27B0;
+    -fx-font-style: italic;
+    -fx-font-size: 13px;
+}
+
+.button-result .button-content {
+    -fx-alignment: center;
+}
+.button-result {
+    -fx-background-color: #1d1d1d;
+    -fx-background-insets: 0.0,1.0,2.0;
+    -fx-background-radius: 5.0;
+    -fx-padding: 3.0 10.0 3.0 10.0;
+    -fx-border-style: solid;
+    -fx-border-radius-bottom: 4px;
+    -fx-border-color: rgb(94, 94, 94);
+}
+.hbox-top, .hbox-bottom {
+    -fx-background-color: #8fbc8f;
+    -fx-padding: 10.0;
+    -fx-spacing: 10.0;
+    -fx-alignment: center;
+    -fx-border-color: #a3a7a8;
+    -fx-border-width: 1.0;
+}
+
+.hbox-bottom {
+    -fx-border-width: 1.0 0.0 0.0 0.0;
+}
+
+.hbox-top {
+    -fx-border-width: 0.0 0.0 1.0 0.0;
+}
+
+.tab-header-area {
+    -fx-background-color: #8fbc8f;
+}
+
 .text-area {
     -fx-font-family: Consolas;
     -fx-font-size: 15.0;

@@ -13,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -38,6 +39,7 @@ public class DataSetGenericFX extends Application {
         Button btLoadShowALLCLASSES = new Button("Load/Show ALL CLASSES");
 
         HBox hBoxTop = new HBox(btLoadShowClassesMDC, btLoadShowClassesTMILLY, btLoadShowML, btLoadShowALLCLASSES); // provided in starter code
+        hBoxTop.getStyleClass().add("hbox-top");
         hBoxTop.setSpacing(10);
         hBoxTop.setAlignment(Pos.CENTER);
         hBoxTop.setPadding(new Insets(5, 5, 5, 5));
@@ -65,6 +67,7 @@ public class DataSetGenericFX extends Application {
         Button btnExit = new Button("Exit");
 
         HBox hBoxBottom = new HBox(btSearchByTimeRange, cbTimeRangeStart, cbTimeRangeEnd, btClearAnswers, btnExit);
+        hBoxBottom.getStyleClass().add("hbox-bottom");
         hBoxBottom.setSpacing(10);
         hBoxBottom.setAlignment(Pos.CENTER);
         hBoxBottom.setPadding(new Insets(5, 5, 5, 5));
@@ -77,7 +80,7 @@ public class DataSetGenericFX extends Application {
         scrollPane.setFitToWidth(true); // provided in starter code
         scrollPane.setPrefViewportWidth(Region.USE_COMPUTED_SIZE);
         scrollPane.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+        //scrollPane.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
         BorderPane borderPane = new BorderPane(); // provided in starter code
         borderPane.setTop(hBoxTop);
         borderPane.setBottom(hBoxBottom);
@@ -92,11 +95,31 @@ public class DataSetGenericFX extends Application {
                     output = "MDC classes loaded - " + classes.size() + "\n";
                     for (danceClass dance : classes) {
                         Button btDanceClass = new Button();
+                        btDanceClass.getStyleClass().add("button-result");
                         btDanceClass.setMaxWidth(Double.MAX_VALUE); // This allows the button to grow
-                        btDanceClass.setPrefHeight(42); // Fixed height
-                        btDanceClass.setMinHeight(40); // Minimum height
-                        btDanceClass.setMaxHeight(42); // Maximum height
-                        btDanceClass.setText(String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()));
+                        btDanceClass.setPrefHeight(45); // Fixed height
+                        btDanceClass.setMinHeight(45); // Minimum height
+                        btDanceClass.setMaxHeight(45); // Maximum height
+                        // Replace the btDanceClass.setText() line with:
+                        VBox buttonContent = new VBox();
+                        buttonContent.setAlignment(Pos.CENTER);
+                        HBox topRow = new HBox();
+                        topRow.setAlignment(Pos.CENTER);
+                        HBox bottomRow = new HBox();
+                        bottomRow.setAlignment(Pos.CENTER);
+                        Label timeLabel = new Label(dance.getTime());
+                        timeLabel.getStyleClass().add("time-label");
+                        Label classLabel = new Label(" | " + dance.getClassName() + " | ");
+                        classLabel.getStyleClass().add("class-label");
+                        Label lengthLabel = new Label(dance.getLength());
+                        lengthLabel.getStyleClass().add("length-label");
+                        Label instructorLabel = new Label(" | " + dance.getInstructor() + " | ");
+                        instructorLabel.getStyleClass().add("instructor-label");
+                        topRow.getChildren().addAll(timeLabel, classLabel);
+                        bottomRow.getChildren().addAll(lengthLabel, instructorLabel);
+                        buttonContent.getChildren().addAll(topRow, bottomRow);
+                        btDanceClass.setGraphic(buttonContent);
+                        btDanceClass.setText("");
                         output += String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()) + "\n";
                         vBoxCenter.getChildren().addAll(btDanceClass);
                     }
@@ -254,7 +277,7 @@ public class DataSetGenericFX extends Application {
         });
 
         // Create a scene and place it in the stage
-        Scene scene = new Scene(borderPane, 750, 400);
+        Scene scene = new Scene(borderPane, 750, 470);
         scene.widthProperty().addListener((obs, oldVal, newVal) -> {
             System.out.println("Window Width: " + newVal);
         });
