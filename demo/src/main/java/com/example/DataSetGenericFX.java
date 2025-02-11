@@ -29,6 +29,35 @@ public class DataSetGenericFX extends Application {
 
     DataSetGeneric<danceClass> classes = new DataSetGeneric<>(); // created all lists of objects needed
 
+    public Button createDanceClassButton(danceClass dance, VBox vBoxCenter) {
+        Button btDanceClass = new Button();
+        btDanceClass.getStyleClass().add("button-result");
+        btDanceClass.setMaxWidth(Double.MAX_VALUE); // This allows the button to grow
+        btDanceClass.setPrefHeight(45); // Fixed height
+        btDanceClass.setMinHeight(45); // Minimum height
+        btDanceClass.setMaxHeight(45); // Maximum height
+        VBox buttonContent = new VBox();
+        buttonContent.setAlignment(Pos.CENTER);
+        HBox topRow = new HBox();
+        topRow.setAlignment(Pos.CENTER);
+        HBox bottomRow = new HBox();
+        bottomRow.setAlignment(Pos.CENTER);
+        Label timeLabel = new Label(dance.getTime());
+        timeLabel.getStyleClass().add("time-label");
+        Label classLabel = new Label(" | " + dance.getClassName() + " | ");
+        classLabel.getStyleClass().add("class-label");
+        Label lengthLabel = new Label(dance.getLength());
+        lengthLabel.getStyleClass().add("length-label");
+        Label instructorLabel = new Label(" | " + dance.getInstructor() + " | ");
+        instructorLabel.getStyleClass().add("instructor-label");
+        topRow.getChildren().addAll(timeLabel, classLabel);
+        bottomRow.getChildren().addAll(lengthLabel, instructorLabel);
+        buttonContent.getChildren().addAll(topRow, bottomRow);
+        btDanceClass.setGraphic(buttonContent);
+        btDanceClass.setText("");
+        return btDanceClass;
+    }
+
     public void start(Stage primaryStage) {
         TextArea textArea = new TextArea(); // provided in starter code
         textArea.setWrapText(true);
@@ -94,34 +123,7 @@ public class DataSetGenericFX extends Application {
                 if (classes != null && classes.size() > 0) {
                     output = "MDC classes loaded - " + classes.size() + "\n";
                     for (danceClass dance : classes) {
-                        Button btDanceClass = new Button();
-                        btDanceClass.getStyleClass().add("button-result");
-                        btDanceClass.setMaxWidth(Double.MAX_VALUE); // This allows the button to grow
-                        btDanceClass.setPrefHeight(45); // Fixed height
-                        btDanceClass.setMinHeight(45); // Minimum height
-                        btDanceClass.setMaxHeight(45); // Maximum height
-                        // Replace the btDanceClass.setText() line with:
-                        VBox buttonContent = new VBox();
-                        buttonContent.setAlignment(Pos.CENTER);
-                        HBox topRow = new HBox();
-                        topRow.setAlignment(Pos.CENTER);
-                        HBox bottomRow = new HBox();
-                        bottomRow.setAlignment(Pos.CENTER);
-                        Label timeLabel = new Label(dance.getTime());
-                        timeLabel.getStyleClass().add("time-label");
-                        Label classLabel = new Label(" | " + dance.getClassName() + " | ");
-                        classLabel.getStyleClass().add("class-label");
-                        Label lengthLabel = new Label(dance.getLength());
-                        lengthLabel.getStyleClass().add("length-label");
-                        Label instructorLabel = new Label(" | " + dance.getInstructor() + " | ");
-                        instructorLabel.getStyleClass().add("instructor-label");
-                        topRow.getChildren().addAll(timeLabel, classLabel);
-                        bottomRow.getChildren().addAll(lengthLabel, instructorLabel);
-                        buttonContent.getChildren().addAll(topRow, bottomRow);
-                        btDanceClass.setGraphic(buttonContent);
-                        btDanceClass.setText("");
-                        output += String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()) + "\n";
-                        vBoxCenter.getChildren().addAll(btDanceClass);
+                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
                     }
                 } else {
                     output = "No classes available or failure loading classes MDC\n";
@@ -138,14 +140,7 @@ public class DataSetGenericFX extends Application {
                 if (classes != null && classes.size() > 0) {
                     output = "TMilly classes loaded - " + classes.size() + "\n";
                     for (danceClass dance : classes) {
-                        Button btDanceClass = new Button();
-                        btDanceClass.setMaxWidth(Double.MAX_VALUE); // This allows the button to grow
-                        btDanceClass.setPrefHeight(42); // Fixed height
-                        btDanceClass.setMinHeight(40); // Minimum height
-                        btDanceClass.setMaxHeight(42); // Maximum height
-                        btDanceClass.setText(String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()));
-                        output += String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()) + "\n";
-                        vBoxCenter.getChildren().addAll(btDanceClass);
+                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
                     }
                 } else {
                     output = "No classes available or failure loading classes TMilly\n";
@@ -162,14 +157,7 @@ public class DataSetGenericFX extends Application {
                 if (classes != null && classes.size() > 0) {
                     output = "ML classes loaded - " + classes.size() + "\n";
                     for (danceClass dance : classes) {
-                        Button btDanceClass = new Button();
-                        btDanceClass.setMaxWidth(Double.MAX_VALUE); // This allows the button to grow
-                        btDanceClass.setPrefHeight(42); // Fixed height
-                        btDanceClass.setMinHeight(40); // Minimum height
-                        btDanceClass.setMaxHeight(42); // Maximum height
-                        btDanceClass.setText(String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()));
-                        output += String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()) + "\n";
-                        vBoxCenter.getChildren().addAll(btDanceClass);
+                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
                     }
                 } else {
                     output = "No classes available or failure loading classes ML\n";
@@ -187,14 +175,8 @@ public class DataSetGenericFX extends Application {
                 if (mdcClasses != null && mdcClasses.size() > 0) {
                     output += "MDC classes loaded - " + mdcClasses.size() + "\n";
                     for (danceClass dance : mdcClasses) {
-                        Button btDanceClass = new Button();
-                        btDanceClass.setMaxWidth(Double.MAX_VALUE); // This allows the button to grow
-                        btDanceClass.setPrefHeight(42); // Fixed height
-                        btDanceClass.setMinHeight(40); // Minimum height
-                        btDanceClass.setMaxHeight(42); // Maximum height
-                        btDanceClass.setText(String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()));
-                        output += String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()) + "\n";
-                        vBoxCenter.getChildren().addAll(btDanceClass);                    }
+                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
+                    }
                 } else {
                     output += "No classes available from MDC\n";
                 }
@@ -203,14 +185,8 @@ public class DataSetGenericFX extends Application {
                 if (tmillyClasses != null && tmillyClasses.size() > 0) {
                     output += "\nTMilly classes loaded - " + tmillyClasses.size() + "\n";
                     for (danceClass dance : tmillyClasses) {
-                        Button btDanceClass = new Button();
-                        btDanceClass.setMaxWidth(Double.MAX_VALUE); // This allows the button to grow
-                        btDanceClass.setPrefHeight(42); // Fixed height
-                        btDanceClass.setMinHeight(40); // Minimum height
-                        btDanceClass.setMaxHeight(42); // Maximum height
-                        btDanceClass.setText(String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()));
-                        output += String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()) + "\n";
-                        vBoxCenter.getChildren().addAll(btDanceClass);                    }
+                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
+                    }
                 } else {
                     output += "No classes available from TMilly\n";
                 }
@@ -219,14 +195,8 @@ public class DataSetGenericFX extends Application {
                 if (mlClasses != null && mlClasses.size() > 0) {
                     output += "\nML classes loaded - " + mlClasses.size() + "\n";
                     for (danceClass dance : mlClasses) {
-                        Button btDanceClass = new Button();
-                        btDanceClass.setMaxWidth(Double.MAX_VALUE); // This allows the button to grow
-                        btDanceClass.setPrefHeight(42); // Fixed height
-                        btDanceClass.setMinHeight(40); // Minimum height
-                        btDanceClass.setMaxHeight(42); // Maximum height
-                        btDanceClass.setText(String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()));
-                        output += String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()) + "\n";
-                        vBoxCenter.getChildren().addAll(btDanceClass);                    }
+                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
+                    }
                 } else {
                     output += "No classes available from ML\n";
                 }
@@ -248,14 +218,8 @@ public class DataSetGenericFX extends Application {
                 if (classes != null && classes.size() > 0) {
                     output = "Classes from " + timeStart + " to " + timeEnd + " loaded - " + classes.size() + "\n";
                     for (danceClass dance : classes) {
-                        Button btDanceClass = new Button();
-                        btDanceClass.setMaxWidth(Double.MAX_VALUE); // This allows the button to grow
-                        btDanceClass.setPrefHeight(42); // Fixed height
-                        btDanceClass.setMinHeight(40); // Minimum height
-                        btDanceClass.setMaxHeight(42); // Maximum height
-                        btDanceClass.setText(String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()));
-                        output += String.format("%s\t|%s|\n%s\t|%s|", dance.getTime(), dance.getClassName(), dance.getLength(), dance.getInstructor(), dance.getDate()) + "\n";
-                        vBoxCenter.getChildren().addAll(btDanceClass);                    }
+                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
+                    }
                 } else {
                     output = "Failure loading classes in time range\n";
                 }
