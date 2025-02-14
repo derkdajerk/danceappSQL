@@ -1,4 +1,6 @@
-# took 17-20 seconds for just the 3 scrapes alone to run like this
+# current working version of scraping an entire week of data and entering it into a sql database
+# Date 2/14/2025 1:11 AM
+# Derek Trauner
 import mysql
 import mysql.connector
 import time
@@ -141,13 +143,21 @@ def scrape(driver, url):
             print(f"Error processing day button {day}: {str(e)}")
     
     end = time.time()
-    print("\nIt took", end - start, "seconds!")
+    print("\nIt took", end - start, "seconds to scrape an entire week of classes!")
     return all_classes
 
 
 websites = [
-    "https://www.mindbodyonline.com/explore/locations/movement-lifestyle-noho"
+    ("https://www.mindbodyonline.com/explore/locations/tmilly-studio", "INSERT INTO tmilly (classname, instructor, price, time, length, date) VALUES (%s, %s, %s, %s, %s, %s)"),
+    ("https://www.mindbodyonline.com/explore/locations/movement-lifestyle-noho", "INSERT INTO ml (classname, instructor, price, time, length, date) VALUES (%s, %s, %s, %s, %s, %s)"),
+    ("https://www.mindbodyonline.com/explore/locations/millennium-dance-complex-studio-city", "INSERT INTO mdc (classname, instructor, price, time, length, date) VALUES (%s, %s, %s, %s, %s, %s)")
 ]
+
+for table in ["mdc", "ml", "tmilly"]:
+    mycursor.execute(f"DELETE FROM {table}")
+    mycursor.execute(f"ALTER TABLE {table} AUTO_INCREMENT = 1")
+
+mydb.commit()
 
 try:
     op = webdriver.ChromeOptions()
@@ -156,16 +166,18 @@ try:
     op.add_argument('--log-level=3')
     driver = webdriver.Chrome(options=op)
 
-    for url in websites:
+    for url, sql in websites:
         try:
-            entire_week_class_data = scrape(driver, url)
+            class_data = scrape(driver, url)
             print(f"Entering data for {url}")
-            print(entire_week_class_data)
+            mycursor.executemany(sql, class_data)
             print(f"Completed {url.split('/')[-1]}:")
         except Exception as e:
             print(f"Error processing {url}: {str(e)}")
-
+            
+    mydb.commit()
     print("\nAll operations completed")
+    print(f"{mycursor.rowcount} records inserted.")
     
 finally:
     # Clean up resources
