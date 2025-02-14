@@ -27,7 +27,7 @@ import javafx.stage.Stage;
 
 public class DataSetGenericFX extends Application {
 
-    DataSetGeneric<danceClass> classes = new DataSetGeneric<>(); // created all lists of objects needed
+    DataSetGeneric<danceClass> classes = new DataSetGeneric<>();
 
     public Button createDanceClassButton(danceClass dance, VBox vBoxCenter) {
         Button btDanceClass = new Button();
@@ -75,7 +75,7 @@ public class DataSetGenericFX extends Application {
 
         Button btSearchByTimeRange = new Button("Search by Time Range");
         ComboBox<String> cbTimeRangeStart = new ComboBox<>();
-        for (int i = 0; i < 48; i++) {
+        for (int i = 15; i < 47; i++) {
             int hour = (i / 2);
             String minutes = (i % 2 == 0) ? "00" : "30";
             String amPm = (hour < 12) ? "AM" : "PM";
@@ -84,7 +84,7 @@ public class DataSetGenericFX extends Application {
         }
         cbTimeRangeStart.setMaxWidth(93);
         ComboBox<String> cbTimeRangeEnd = new ComboBox<>();
-        for (int i = 0; i < 48; i++) {
+        for (int i = 15; i < 47; i++) {
             int hour = (i / 2);
             String minutes = (i % 2 == 0) ? "00" : "30";
             String amPm = (hour < 12) ? "AM" : "PM";

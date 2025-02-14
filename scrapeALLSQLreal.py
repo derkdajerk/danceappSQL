@@ -27,7 +27,6 @@ def safe_find(element, xpath, default="N/A"):
         return default
 
 def scrape(driver, url):
-    print("test")
     start = time.time()
     print(f"\nScraping {url}")
     driver.get(url)
