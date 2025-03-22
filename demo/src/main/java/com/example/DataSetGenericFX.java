@@ -11,6 +11,12 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -18,6 +24,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
+import java.time.temporal.ChronoField;
+import java.time.format.DateTimeFormatterBuilder;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
@@ -28,6 +36,34 @@ import javafx.stage.Stage;
 public class DataSetGenericFX extends Application {
 
     DataSetGeneric<danceClass> classes = new DataSetGeneric<>();
+    DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+    .parseCaseInsensitive().appendPattern("EEEE, MMMM d").parseDefaulting(ChronoField.YEAR, 2025).toFormatter();
+
+    // MAYBE EXTRACT DATE FORMATTING TO A METHOD TAKE OUT THE NUMBER FROM EACH DAY TO SORT/MEASURABLE CLASS
+    private void showClassesGroupedByDate(DataSetGeneric<danceClass> classes, VBox vBoxCenter, TextArea textArea, String studioName) {
+        vBoxCenter.getChildren().clear();
+        String output = "";
+        if (classes != null && classes.size() > 0) {
+            output = studioName + " classes loaded - " + classes.size() + "\n";
+            // Group by date using a TreeMap for sorted order
+            Map<LocalDate, List<danceClass>> groupedByDate = classes.stream()
+                .collect(Collectors.groupingBy(dance -> LocalDate.parse(dance.getDate(), formatter),
+                TreeMap::new,Collectors.toList()));
+            for (Map.Entry<LocalDate, List<danceClass>> entry : groupedByDate.entrySet()) {
+                String dateText = entry.getKey().format(formatter); // format the date for display
+                Button dateButton = new Button("Date: " + dateText);
+                dateButton.getStyleClass().add("date-button");
+                dateButton.setMaxWidth(Double.MAX_VALUE);
+                vBoxCenter.getChildren().add(dateButton);
+                for (danceClass dance : entry.getValue()) {
+                    vBoxCenter.getChildren().add(createDanceClassButton(dance, vBoxCenter));
+                }
+            }
+        } else {
+            output = "No classes available or failure loading classes for " + studioName + "\n";
+        }
+        textArea.setText(output);
+    }
 
     public Button createDanceClassButton(danceClass dance, VBox vBoxCenter) {
         Button btDanceClass = new Button();
@@ -41,6 +77,7 @@ public class DataSetGenericFX extends Application {
         HBox topRow = new HBox();
         topRow.setAlignment(Pos.CENTER);
         HBox bottomRow = new HBox();
+        Label dateLabel = new Label(dance.getDate());
         bottomRow.setAlignment(Pos.CENTER);
         Label timeLabel = new Label(dance.getTime());
         timeLabel.getStyleClass().add("time-label");
@@ -94,8 +131,10 @@ public class DataSetGenericFX extends Application {
         cbTimeRangeEnd.setMaxWidth(93);
         Button btClearAnswers = new Button("Clear"); // provided in starter code
         Button btnExit = new Button("Exit");
+        ComboBox<String> cbStudio = new ComboBox<>();
+        cbStudio.getItems().addAll("ML", "MDC", "TMILLY");
 
-        HBox hBoxBottom = new HBox(btSearchByTimeRange, cbTimeRangeStart, cbTimeRangeEnd, btClearAnswers, btnExit);
+        HBox hBoxBottom = new HBox(cbStudio, btSearchByTimeRange, cbTimeRangeStart, cbTimeRangeEnd, btClearAnswers, btnExit);
         hBoxBottom.getStyleClass().add("hbox-bottom");
         hBoxBottom.setSpacing(10);
         hBoxBottom.setAlignment(Pos.CENTER);
@@ -117,94 +156,53 @@ public class DataSetGenericFX extends Application {
 
         btLoadShowClassesMDC.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                if(vBoxCenter.getChildren().size() > 0) vBoxCenter.getChildren().clear();
-                String output = "";
                 classes = DbConnection.ReadFromDataBaseMDC();
-                if (classes != null && classes.size() > 0) {
-                    output = "MDC classes loaded - " + classes.size() + "\n";
-                    for (danceClass dance : classes) {
-                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
-                    }
-                } else {
-                    output = "No classes available or failure loading classes MDC\n";
-                }
-                textArea.setText(output);
+                scrollPane.setVvalue(0);
+                showClassesGroupedByDate(classes, vBoxCenter, textArea, "MDC");
             }
         });
 
         btLoadShowClassesTMILLY.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                if(vBoxCenter.getChildren().size() > 0) vBoxCenter.getChildren().clear();
-                String output = "";
                 classes = DbConnection.ReadFromDataBaseTMILLY();
-                if (classes != null && classes.size() > 0) {
-                    output = "TMilly classes loaded - " + classes.size() + "\n";
-                    for (danceClass dance : classes) {
-                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
-                    }
-                } else {
-                    output = "No classes available or failure loading classes TMilly\n";
-                }
-                textArea.setText(output);
+                scrollPane.setVvalue(0);
+                showClassesGroupedByDate(classes, vBoxCenter, textArea, "TMILLY");
             }
         });
 
         btLoadShowML.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                if(vBoxCenter.getChildren().size() > 0) vBoxCenter.getChildren().clear();
-                String output = "";
                 classes = DbConnection.ReadFromDataBaseML();
-                if (classes != null && classes.size() > 0) {
-                    output = "ML classes loaded - " + classes.size() + "\n";
-                    for (danceClass dance : classes) {
-                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
-                    }
-                } else {
-                    output = "No classes available or failure loading classes ML\n";
-                }
-                textArea.setText(output);
+                scrollPane.setVvalue(0);
+                showClassesGroupedByDate(classes, vBoxCenter, textArea, "ML");
             }
         });
 
         btLoadShowALLCLASSES.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
+                scrollPane.setVvalue(0);
                 if(vBoxCenter.getChildren().size() > 0) vBoxCenter.getChildren().clear();
-                String output = "";
                 // Load MDC Classes
                 DataSetGeneric<danceClass> mdcClasses = DbConnection.ReadFromDataBaseMDC();
                 if (mdcClasses != null && mdcClasses.size() > 0) {
-                    output += "MDC classes loaded - " + mdcClasses.size() + "\n";
-                    for (danceClass dance : mdcClasses) {
-                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
-                    }
+                    showClassesGroupedByDate(mdcClasses, vBoxCenter, textArea, "MDC");
                 } else {
-                    output += "No classes available from MDC\n";
+                    System.out.println("No classes available from MDC\n");
                 }
                 // Load TMilly Classes
                 DataSetGeneric<danceClass> tmillyClasses = DbConnection.ReadFromDataBaseTMILLY();
                 if (tmillyClasses != null && tmillyClasses.size() > 0) {
-                    output += "\nTMilly classes loaded - " + tmillyClasses.size() + "\n";
-                    for (danceClass dance : tmillyClasses) {
-                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
-                    }
+                    showClassesGroupedByDate(tmillyClasses, vBoxCenter, textArea, "TMILLY");
                 } else {
-                    output += "No classes available from TMilly\n";
+                    System.out.println("No classes available from TMILLY\n");
                 }
                 // Load ML Classes
                 DataSetGeneric<danceClass> mlClasses = DbConnection.ReadFromDataBaseML();
                 if (mlClasses != null && mlClasses.size() > 0) {
-                    output += "\nML classes loaded - " + mlClasses.size() + "\n";
-                    for (danceClass dance : mlClasses) {
-                        vBoxCenter.getChildren().addAll(createDanceClassButton(dance, vBoxCenter));
-                    }
+                    showClassesGroupedByDate(mlClasses, vBoxCenter, textArea, "ML");
                 } else {
-                    output += "No classes available from ML\n";
+                    System.out.println("No classes available from MDC\n");
                 }
-                
-                if (output.equals("")) {
-                    output = "No classes available from any studio";
-                }                
-                textArea.setText(output);
             }
         });
 

@@ -5,7 +5,13 @@
 		},
 		{
 			"path": "../../../../lazy-kit-master"
+		},
+		{
+			"path": "../test springboot"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "interactive",
+		"java.compile.nullAnalysis.mode": "automatic"
+	}
 }

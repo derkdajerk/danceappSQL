@@ -171,8 +171,7 @@ public class DbConnection {
 								"WHERE STR_TO_DATE(time, '%%l:%%i %%p') " +
 								"BETWEEN STR_TO_DATE(?, '%%l:%%i %%p') " +
 								"AND STR_TO_DATE(?, '%%l:%%i %%p') " +
-								"ORDER BY STR_TO_DATE(time, '%%l:%%i %%p')",
-						table);
+								"ORDER BY STR_TO_DATE(time, '%%l:%%i %%p')", table);
 
 				try (PreparedStatement pstmt = conn.prepareStatement(query)) {
 					pstmt.setString(1, startTime);

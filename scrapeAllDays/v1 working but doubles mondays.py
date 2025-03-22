@@ -1,6 +1,8 @@
 # current working version of scraping an entire week of data and entering it into a sql database
 # Date 2/14/2025 1:11 AM
 # Derek Trauner
+######## supabase something to run fucnitons automatically ############# edge function or another with intervals
+
 import mysql
 import mysql.connector
 import time
@@ -129,23 +131,17 @@ def scrape(driver, url):
         return []
     # code to scrape the class schedule from the page
     all_classes = []
-    scraped_days = set()  # set to track days already scraped
-    for day in range(1, len(day_button_elements)):
+    for day in range(1, len(day_button_elements)):  # Change the range as needed
         try:
-            day_text = day_button_elements[day].text.strip()  # get text for the day button, e.g., "Monday"
-            if day_text in scraped_days:
-                print(f"Skipping duplicate day button: {day_text}")
-                continue
-            scraped_days.add(day_text)
             WebDriverWait(driver, 5).until(EC.element_to_be_clickable(day_button_elements[day]))
-            # Click on the day button
             actions.move_to_element(day_button_elements[day]).click().perform()
-            print(f"Day button for {day_text} clicked")
+            print(f"Day button {day} clicked")
             classes = scrape_class_data(driver)
-            print(f"Classes for {day_text}:")
+            print(f"Classes for day button {day}:")
+            #print(classes)
             all_classes.extend(classes)
         except Exception as e:
-            print(f"Error processing day button at index {day} ({day_text}): {str(e)}")
+            print(f"Error processing day button {day}: {str(e)}")
     
     end = time.time()
     print("\nIt took", end - start, "seconds to scrape an entire week of classes!")
