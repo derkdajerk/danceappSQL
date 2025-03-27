@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -30,6 +32,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -143,9 +146,8 @@ public class DataSetGenericFX extends Application {
         VBox vBoxCenter = new VBox();
         vBoxCenter.setAlignment(Pos.TOP_CENTER);
 
-
         ScrollPane scrollPane = new ScrollPane(vBoxCenter);
-        scrollPane.setFitToWidth(true); // provided in starter code
+        scrollPane.setFitToWidth(true);
         scrollPane.setPrefViewportWidth(Region.USE_COMPUTED_SIZE);
         scrollPane.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
         //scrollPane.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
@@ -180,26 +182,62 @@ public class DataSetGenericFX extends Application {
 
         btLoadShowALLCLASSES.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                scrollPane.setVvalue(0);
                 if(vBoxCenter.getChildren().size() > 0) vBoxCenter.getChildren().clear();
+
+                HBox testHBox = new HBox();
+
+                VBox vBoxCenterAllClassesTMilly = new VBox();
+                vBoxCenterAllClassesTMilly.setAlignment(Pos.TOP_CENTER);
+                ScrollPane scrollPaneTMilly = new ScrollPane(vBoxCenterAllClassesTMilly);
+                scrollPaneTMilly.setFitToWidth(true);
+                scrollPaneTMilly.setPrefViewportWidth(testHBox.getWidth() / 3.0);
+                scrollPaneTMilly.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+                Button test1 = new Button("test1");
+                vBoxCenterAllClassesTMilly.getChildren().add(test1);
+
+                VBox vBoxCenterAllClassesMDC = new VBox();
+                vBoxCenterAllClassesMDC.setAlignment(Pos.TOP_CENTER);
+                ScrollPane scrollPaneMDC = new ScrollPane(vBoxCenterAllClassesMDC);
+                scrollPaneMDC.setFitToWidth(true);
+                scrollPaneMDC.setPrefViewportWidth(testHBox.getWidth() / 3.0);
+                scrollPaneMDC.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+                Button test2 = new Button("test2");
+                vBoxCenterAllClassesMDC.getChildren().add(test2);
+
+                VBox vBoxCenterAllClassesML = new VBox();
+                vBoxCenterAllClassesML.setAlignment(Pos.TOP_CENTER);
+                ScrollPane scrollPaneML = new ScrollPane(vBoxCenterAllClassesML);
+                scrollPaneML.setFitToWidth(true);
+                scrollPaneML.setPrefViewportWidth(testHBox.getWidth() / 3.0);
+                scrollPaneML.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+                Button test3 = new Button("test3");
+                vBoxCenterAllClassesML.getChildren().add(test3);
+
+                testHBox.getChildren().addAll(scrollPaneMDC,scrollPaneML,scrollPaneTMilly);
+                // HBox.setHgrow(scrollPaneMDC, Priority.ALWAYS);
+                // HBox.setHgrow(scrollPaneTMilly, Priority.ALWAYS);
+                // HBox.setHgrow(scrollPaneML, Priority.ALWAYS);
+                // Stream.of(scrollPaneMDC, scrollPaneTMilly, scrollPaneML).forEach(sp -> HBox.setHgrow(sp, Priority.ALWAYS));
+                borderPane.setCenter(testHBox);
+
                 // Load MDC Classes
                 DataSetGeneric<danceClass> mdcClasses = DbConnection.ReadFromDataBaseMDC();
                 if (mdcClasses != null && mdcClasses.size() > 0) {
-                    showClassesGroupedByDate(mdcClasses, vBoxCenter, textArea, "MDC");
+                    showClassesGroupedByDate(mdcClasses, vBoxCenterAllClassesMDC, textArea, "MDC");
                 } else {
                     System.out.println("No classes available from MDC\n");
                 }
                 // Load TMilly Classes
                 DataSetGeneric<danceClass> tmillyClasses = DbConnection.ReadFromDataBaseTMILLY();
                 if (tmillyClasses != null && tmillyClasses.size() > 0) {
-                    showClassesGroupedByDate(tmillyClasses, vBoxCenter, textArea, "TMILLY");
+                    showClassesGroupedByDate(tmillyClasses, vBoxCenterAllClassesTMilly, textArea, "TMILLY");
                 } else {
                     System.out.println("No classes available from TMILLY\n");
                 }
                 // Load ML Classes
                 DataSetGeneric<danceClass> mlClasses = DbConnection.ReadFromDataBaseML();
                 if (mlClasses != null && mlClasses.size() > 0) {
-                    showClassesGroupedByDate(mlClasses, vBoxCenter, textArea, "ML");
+                    showClassesGroupedByDate(mlClasses, vBoxCenterAllClassesML, textArea, "ML");
                 } else {
                     System.out.println("No classes available from MDC\n");
                 }
