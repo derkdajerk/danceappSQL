@@ -1,5 +1,6 @@
 # current working version of scraping an entire week of data and entering it into a sql database
-# Date 2/14/2025 1:11 AM
+# doubles mondays and tuesdays for TMILLY becausse they have no weekend classes
+# Date 3/26/2025 7:32 PM
 # Derek Trauner
 import mysql
 import mysql.connector
@@ -89,20 +90,28 @@ def safe_find(element, xpath, default="N/A"):
     except NoSuchElementException:
         return default
 
+consent_clicked = False
+
 def scrape(driver, url):
+    global consent_clicked
     print("test")
     start = time.time()
     print(f"\nScraping {url}")
     driver.get(url)
     actions = ActionChains(driver)
-    try:
-        consent_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "truste-consent-button")))
-        consent_button.click()
-        print("Consent button clicked")
-    except TimeoutException:
-        print("Consent button timed out")
-    except NoSuchElementException:
-        print("Consent button not found")
+    # Only click the consent button if it hasn't been clicked before
+    if not consent_clicked:
+        try:
+            consent_button = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.ID, "truste-consent-button")))
+            consent_button.click()
+            consent_clicked = True
+            print("Consent button clicked")
+        except TimeoutException:
+            print("Consent button timed out")
+        except NoSuchElementException:
+            print("Consent button not found")
+    else:
+        print("Consent already given, skipping consent button")
     # Find the week button container
     try:
         print("Trying to find entire week's button container")
@@ -129,21 +138,28 @@ def scrape(driver, url):
         return []
     # code to scrape the class schedule from the page
     all_classes = []
-    scraped_days = set()  # set to track days already scraped
-    for day in range(1, len(day_button_elements)):
+    processed_dates = set()  # track dates already scraped
+    for day, button in enumerate(day_button_elements):
+        day_text = button.text.strip()
+        if not day_text:
+            print(f"Skipping day button at index {day} because text is empty")
+            continue
         try:
-            day_text = day_button_elements[day].text.strip()  # get text for the day button, e.g., "Monday"
-            if day_text in scraped_days:
-                print(f"Skipping duplicate day button: {day_text}")
-                continue
-            scraped_days.add(day_text)
-            WebDriverWait(driver, 5).until(EC.element_to_be_clickable(day_button_elements[day]))
-            # Click on the day button
-            actions.move_to_element(day_button_elements[day]).click().perform()
+            WebDriverWait(driver, 5).until(EC.element_to_be_clickable(button))
+            actions.move_to_element(button).click().perform()
             print(f"Day button for {day_text} clicked")
             classes = scrape_class_data(driver)
-            print(f"Classes for {day_text}:")
-            all_classes.extend(classes)
+            if classes:
+                # using the date from the first scraped record as key (adjust index based on your tuple)
+                scraped_date = classes[0][-1]
+                if scraped_date in processed_dates:
+                    print(f"Skipping duplicate date: {scraped_date}")
+                    continue
+                processed_dates.add(scraped_date)
+                print(f"Adding classes for {scraped_date}")
+                all_classes.extend(classes)
+            else:
+                print(f"No classes found for button at index {day} ({day_text})")
         except Exception as e:
             print(f"Error processing day button at index {day} ({day_text}): {str(e)}")
     
