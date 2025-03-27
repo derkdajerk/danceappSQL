@@ -5,12 +5,10 @@
  */
 
 package com.example;
-import javafx.scene.control.Separator;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -18,11 +16,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Region;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
@@ -32,13 +28,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class DataSetGenericFX extends Application {
 
     DataSetGeneric<danceClass> classes = new DataSetGeneric<>();
+
     DateTimeFormatter formatter = new DateTimeFormatterBuilder()
     .parseCaseInsensitive().appendPattern("EEEE, MMMM d").parseDefaulting(ChronoField.YEAR, 2025).toFormatter();
 
@@ -46,12 +42,15 @@ public class DataSetGenericFX extends Application {
     private void showClassesGroupedByDate(DataSetGeneric<danceClass> classes, VBox vBoxCenter, TextArea textArea, String studioName) {
         vBoxCenter.getChildren().clear();
         String output = "";
+        Button btStudioName = new Button(studioName);
+        vBoxCenter.getChildren().add(btStudioName);
         if (classes != null && classes.size() > 0) {
             output = studioName + " classes loaded - " + classes.size() + "\n";
             // Group by date using a TreeMap for sorted order
             Map<LocalDate, List<danceClass>> groupedByDate = classes.stream()
                 .collect(Collectors.groupingBy(dance -> LocalDate.parse(dance.getDate(), formatter),
                 TreeMap::new,Collectors.toList()));
+
             for (Map.Entry<LocalDate, List<danceClass>> entry : groupedByDate.entrySet()) {
                 String dateText = entry.getKey().format(formatter); // format the date for display
                 Button dateButton = new Button("Date: " + dateText);
@@ -154,16 +153,23 @@ public class DataSetGenericFX extends Application {
         borderPane.setBottom(hBoxBottom);
         borderPane.setCenter(scrollPane);
 
+        HBox hbShowAllClasses = new HBox();
+
         btLoadShowClassesMDC.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
+                hbShowAllClasses.getChildren().clear();
+                borderPane.setCenter(scrollPane);
                 classes = DbConnection.ReadFromDataBaseMDC();
                 scrollPane.setVvalue(0);
                 showClassesGroupedByDate(classes, vBoxCenter, textArea, "MDC");
+
             }
         });
 
         btLoadShowClassesTMILLY.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
+                hbShowAllClasses.getChildren().clear();
+                borderPane.setCenter(scrollPane);
                 classes = DbConnection.ReadFromDataBaseTMILLY();
                 scrollPane.setVvalue(0);
                 showClassesGroupedByDate(classes, vBoxCenter, textArea, "TMILLY");
@@ -172,6 +178,8 @@ public class DataSetGenericFX extends Application {
 
         btLoadShowML.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
+                hbShowAllClasses.getChildren().clear();
+                borderPane.setCenter(scrollPane);
                 classes = DbConnection.ReadFromDataBaseML();
                 scrollPane.setVvalue(0);
                 showClassesGroupedByDate(classes, vBoxCenter, textArea, "ML");
@@ -181,9 +189,9 @@ public class DataSetGenericFX extends Application {
         btLoadShowALLCLASSES.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 if(vBoxCenter.getChildren().size() > 0) vBoxCenter.getChildren().clear();
+                if(hbShowAllClasses.getChildren().size() > 0) hbShowAllClasses.getChildren().clear();
 
-                HBox testHBox = new HBox();
-                borderPane.setCenter(testHBox);
+                borderPane.setCenter(hbShowAllClasses);
                 
                 VBox vBoxCenterAllClassesTMilly = new VBox();
                 vBoxCenterAllClassesTMilly.setAlignment(Pos.TOP_CENTER);
@@ -207,7 +215,7 @@ public class DataSetGenericFX extends Application {
                 scrollPaneML.setFitToWidth(true);
                 scrollPaneML.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
                 Button studioML = new Button("ML");
-                vBoxCenterAllClassesTMilly.getChildren().add(studioTmilly);
+                vBoxCenterAllClassesML.getChildren().add(studioML);
 
                 // Load MDC Classes
                 DataSetGeneric<danceClass> mdcClasses = DbConnection.ReadFromDataBaseMDC();
@@ -231,11 +239,10 @@ public class DataSetGenericFX extends Application {
                     System.out.println("No classes available from MDC\n");
                 }
 
-                testHBox.getChildren().addAll(scrollPaneMDC,scrollPaneML,scrollPaneTMilly);
+                hbShowAllClasses.getChildren().addAll(scrollPaneMDC,scrollPaneML,scrollPaneTMilly);
 
-                testHBox.widthProperty().addListener((obs, oldWidth, newWidth) -> {
-                    double width = newWidth.doubleValue();
-                    Stream.of(scrollPaneMDC, scrollPaneTMilly, scrollPaneML).forEach(sp -> sp.setPrefWidth((width / 3.0)));
+                hbShowAllClasses.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+                    Stream.of(scrollPaneMDC, scrollPaneTMilly, scrollPaneML).forEach(sp -> sp.setPrefWidth((newWidth.doubleValue() / 3.0)));
                 });
             }
         });
@@ -263,6 +270,7 @@ public class DataSetGenericFX extends Application {
             @Override // Override the handle method
             public void handle(ActionEvent e) {
                 vBoxCenter.getChildren().clear();
+                hbShowAllClasses.getChildren().clear();
                 System.out.println("cleared");
             }
         });
