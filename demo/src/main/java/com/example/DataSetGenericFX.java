@@ -44,6 +44,12 @@ public class DataSetGenericFX extends Application {
         String output = "";
         Button btStudioName = new Button(studioName);
         vBoxCenter.getChildren().add(btStudioName);
+        String styleClass = (studioName == "MDC") ? "studioName-MDC" : (studioName == "ML") ? "studioName-ML" : (studioName == "TMILLY") ? "studioName-TMILLY" : "";
+        btStudioName.getStyleClass().add(styleClass);
+        btStudioName.setMaxWidth(Double.MAX_VALUE); // This allows the button to grow
+        btStudioName.setPrefHeight(45); // Fixed height
+        btStudioName.setMinHeight(45); // Minimum height
+        btStudioName.setMaxHeight(45); // Maximum height
         if (classes != null && classes.size() > 0) {
             output = studioName + " classes loaded - " + classes.size() + "\n";
             // Group by date using a TreeMap for sorted order
@@ -147,6 +153,8 @@ public class DataSetGenericFX extends Application {
         ScrollPane scrollPane = new ScrollPane(vBoxCenter);
         scrollPane.setFitToWidth(true);
         scrollPane.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+
 
         BorderPane borderPane = new BorderPane(); // provided in starter code
         borderPane.setTop(hBoxTop);
@@ -190,7 +198,7 @@ public class DataSetGenericFX extends Application {
             public void handle(ActionEvent e) {
                 if(vBoxCenter.getChildren().size() > 0) vBoxCenter.getChildren().clear();
                 if(hbShowAllClasses.getChildren().size() > 0) hbShowAllClasses.getChildren().clear();
-
+                
                 borderPane.setCenter(hbShowAllClasses);
                 
                 VBox vBoxCenterAllClassesTMilly = new VBox();
@@ -198,24 +206,18 @@ public class DataSetGenericFX extends Application {
                 ScrollPane scrollPaneTMilly = new ScrollPane(vBoxCenterAllClassesTMilly);
                 scrollPaneTMilly.setFitToWidth(true);
                 scrollPaneTMilly.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-                Button studioTmilly = new Button("TMilly");
-                vBoxCenterAllClassesTMilly.getChildren().add(studioTmilly);
 
                 VBox vBoxCenterAllClassesMDC = new VBox();
                 vBoxCenterAllClassesMDC.setAlignment(Pos.TOP_CENTER);
                 ScrollPane scrollPaneMDC = new ScrollPane(vBoxCenterAllClassesMDC);
                 scrollPaneMDC.setFitToWidth(true);
                 scrollPaneMDC.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-                Button studioMDC = new Button("MDC");
-                vBoxCenterAllClassesMDC.getChildren().add(studioMDC);
 
                 VBox vBoxCenterAllClassesML = new VBox();
                 vBoxCenterAllClassesML.setAlignment(Pos.TOP_CENTER);
                 ScrollPane scrollPaneML = new ScrollPane(vBoxCenterAllClassesML);
                 scrollPaneML.setFitToWidth(true);
                 scrollPaneML.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-                Button studioML = new Button("ML");
-                vBoxCenterAllClassesML.getChildren().add(studioML);
 
                 // Load MDC Classes
                 DataSetGeneric<danceClass> mdcClasses = DbConnection.ReadFromDataBaseMDC();

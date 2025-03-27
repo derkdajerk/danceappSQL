@@ -45,7 +45,6 @@
     -fx-background-radius: 5.0;
     -fx-padding: 3.0 10.0 3.0 10.0;
     -fx-border-style: solid;
-    -fx-border-radius-bottom: 4px;
     -fx-border-color: rgb(94, 94, 94);
 }
 .hbox-top, .hbox-bottom {
@@ -101,5 +100,40 @@
     -fx-pref-height: 30.0px;  
     -fx-background-insets: 0.0;
 }
-
+.studioName-MDC {
+    -fx-background-color: linear-gradient(to right, rgba(0, 0, 0, 0.75) 30%, rgba(255, 0, 0, 0.75) 100%); /* Gradient */
+    -fx-text-fill: white; /* White text */
+    -fx-border-width: 0; /* No border */
+    -fx-background-radius: 5px; /* Rounded corners */
+    -fx-font-size: 18px; /* Font size */
+    -fx-font-weight: bold;
+    /* -fx-cursor: hand; Pointer cursor */
+}
+.studioName-MDC:hover {
+    -fx-background-color: linear-gradient(to right, rgba(0, 0, 0, 0.9), rgba(255, 0, 0, 0.9)); /* Darker gradient */
+}
+.studioName-ML {
+    -fx-background-color: linear-gradient(to right, rgba(26, 26, 26, 0.75), rgba(148, 207, 63, 0.75)); /* Gradient */
+    -fx-text-fill: white; /* White text */
+    -fx-border-width: 0; /* No border */
+    -fx-background-radius: 5px; /* Rounded corners */
+    -fx-font-size: 18px; /* Font size */
+    -fx-font-weight: bold;
+    /* -fx-cursor: hand; Pointer cursor */
+}
+.studioName-ML:hover {
+    -fx-background-color: linear-gradient(to right, rgba(26, 26, 26, 0.9), rgba(148, 207, 63, 0.9)); /* Gradient */
+}
+.studioName-TMILLY {
+    -fx-background-color: linear-gradient(to right, rgba(27, 27, 27, 0.75), rgba(255, 0, 0, 0.75)); /* Gradient */
+    -fx-text-fill: white; /* White text */
+    -fx-border-width: 0; /* No border */
+    -fx-background-radius: 5px; /* Rounded corners */
+    -fx-font-size: 18px; /* Font size */
+    -fx-font-weight: bold;
+    /* -fx-cursor: hand; Pointer cursor */
+}
+.studioName-TMILLY:hover {
+    -fx-background-color: linear-gradient(to right, rgba(27, 27, 27, 0.9), rgba(255, 0, 0, 0.9)); /* Darker gradient */
+}
 
