@@ -80,7 +80,6 @@ public class DataSetGenericFX extends Application {
         HBox topRow = new HBox();
         topRow.setAlignment(Pos.CENTER);
         HBox bottomRow = new HBox();
-        Label dateLabel = new Label(dance.getDate());
         bottomRow.setAlignment(Pos.CENTER);
         Label timeLabel = new Label(dance.getTime());
         timeLabel.getStyleClass().add("time-label");
@@ -148,9 +147,8 @@ public class DataSetGenericFX extends Application {
 
         ScrollPane scrollPane = new ScrollPane(vBoxCenter);
         scrollPane.setFitToWidth(true);
-        scrollPane.setPrefViewportWidth(Region.USE_COMPUTED_SIZE);
         scrollPane.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-        //scrollPane.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+
         BorderPane borderPane = new BorderPane(); // provided in starter code
         borderPane.setTop(hBoxTop);
         borderPane.setBottom(hBoxBottom);
@@ -185,40 +183,31 @@ public class DataSetGenericFX extends Application {
                 if(vBoxCenter.getChildren().size() > 0) vBoxCenter.getChildren().clear();
 
                 HBox testHBox = new HBox();
-
+                borderPane.setCenter(testHBox);
+                
                 VBox vBoxCenterAllClassesTMilly = new VBox();
                 vBoxCenterAllClassesTMilly.setAlignment(Pos.TOP_CENTER);
                 ScrollPane scrollPaneTMilly = new ScrollPane(vBoxCenterAllClassesTMilly);
                 scrollPaneTMilly.setFitToWidth(true);
-                scrollPaneTMilly.setPrefViewportWidth(testHBox.getWidth() / 3.0);
                 scrollPaneTMilly.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-                Button test1 = new Button("test1");
-                vBoxCenterAllClassesTMilly.getChildren().add(test1);
+                Button studioTmilly = new Button("TMilly");
+                vBoxCenterAllClassesTMilly.getChildren().add(studioTmilly);
 
                 VBox vBoxCenterAllClassesMDC = new VBox();
                 vBoxCenterAllClassesMDC.setAlignment(Pos.TOP_CENTER);
                 ScrollPane scrollPaneMDC = new ScrollPane(vBoxCenterAllClassesMDC);
                 scrollPaneMDC.setFitToWidth(true);
-                scrollPaneMDC.setPrefViewportWidth(testHBox.getWidth() / 3.0);
                 scrollPaneMDC.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-                Button test2 = new Button("test2");
-                vBoxCenterAllClassesMDC.getChildren().add(test2);
+                Button studioMDC = new Button("MDC");
+                vBoxCenterAllClassesMDC.getChildren().add(studioMDC);
 
                 VBox vBoxCenterAllClassesML = new VBox();
                 vBoxCenterAllClassesML.setAlignment(Pos.TOP_CENTER);
                 ScrollPane scrollPaneML = new ScrollPane(vBoxCenterAllClassesML);
                 scrollPaneML.setFitToWidth(true);
-                scrollPaneML.setPrefViewportWidth(testHBox.getWidth() / 3.0);
                 scrollPaneML.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-                Button test3 = new Button("test3");
-                vBoxCenterAllClassesML.getChildren().add(test3);
-
-                testHBox.getChildren().addAll(scrollPaneMDC,scrollPaneML,scrollPaneTMilly);
-                // HBox.setHgrow(scrollPaneMDC, Priority.ALWAYS);
-                // HBox.setHgrow(scrollPaneTMilly, Priority.ALWAYS);
-                // HBox.setHgrow(scrollPaneML, Priority.ALWAYS);
-                // Stream.of(scrollPaneMDC, scrollPaneTMilly, scrollPaneML).forEach(sp -> HBox.setHgrow(sp, Priority.ALWAYS));
-                borderPane.setCenter(testHBox);
+                Button studioML = new Button("ML");
+                vBoxCenterAllClassesTMilly.getChildren().add(studioTmilly);
 
                 // Load MDC Classes
                 DataSetGeneric<danceClass> mdcClasses = DbConnection.ReadFromDataBaseMDC();
@@ -241,6 +230,13 @@ public class DataSetGenericFX extends Application {
                 } else {
                     System.out.println("No classes available from MDC\n");
                 }
+
+                testHBox.getChildren().addAll(scrollPaneMDC,scrollPaneML,scrollPaneTMilly);
+
+                testHBox.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+                    double width = newWidth.doubleValue();
+                    Stream.of(scrollPaneMDC, scrollPaneTMilly, scrollPaneML).forEach(sp -> sp.setPrefWidth((width / 3.0)));
+                });
             }
         });
 
