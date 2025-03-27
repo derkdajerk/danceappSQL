@@ -1,1 +1,3 @@
+*.java linguist-language=Java
 demo/**/*.java linguist-language=Java
+**/demo/**/*.java linguist-language=Java
