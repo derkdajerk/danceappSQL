@@ -252,6 +252,7 @@ public class DataSetGenericFX extends Application {
         btSearchByTimeRange.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 if(vBoxCenter.getChildren().size() > 0) vBoxCenter.getChildren().clear();
+                if(hbShowAllClasses.getChildren().size() > 0) hbShowAllClasses.getChildren().clear();
                 String output = "";
                 String timeStart = cbTimeRangeStart.getValue();
                 String timeEnd = cbTimeRangeEnd.getValue();
