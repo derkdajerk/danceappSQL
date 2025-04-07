@@ -15,18 +15,28 @@ from selenium.webdriver.support import expected_conditions as EC
 start = time.time()
 
 url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
+service_key: str = os.environ.get("SUPABASE_SERVICE_KEY")
+
+if not url or not service_key:
+    raise ValueError("Supabase URL or Service Role Key is not set in the environment!")
+
 supabase: Client = create_client(
     url, 
-    key,
+    service_key,
     options=ClientOptions(
-        postgrest_client_timeout=10,
-        storage_client_timeout=10,
+        postgrest_client_timeout=4,
+        storage_client_timeout=4,
         schema="public",
     )
 )
 
-def scrape_class_data(driver):
+try:
+    tables = supabase.table("danceClassStorage").select("count").execute()
+    print("Succesful connection to SupabaseDB")
+except Exception as e:
+    print("Connection error:", str(e))
+
+def scrape_class_data(driver, studio_name):
     # Wait for the parent class container to load
     try:
         WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.ClassTimeScheduleList_wrapper__Pve3t")))        
@@ -61,6 +71,7 @@ def scrape_class_data(driver):
     try:
         Date = driver.find_element(By.XPATH, '//h5[contains(@class, "is-marginless")]').text
         Date = Date[11:len(Date)]
+        print(Date)
     except NoSuchElementException:
         print("Date not found")
         Date = "N/A"
@@ -72,14 +83,15 @@ def scrape_class_data(driver):
         Price = safe_find(element, './/p[contains(@class, "Price_price__295Er Price_priceFont__1nZCw")]')
         Time = safe_find(element, './/h5[contains(@class, "has-text-primary is-marginless")]')
         Length = safe_find(element, './/p[contains(@class, "ClassTimeScheduleItemDesktop_endTime__26mcG")]', "N/A").replace("(", "").replace(")", "")
-        class_item = (
-            className,
-            Instructor,
-            Price,
-            Time,
-            Length,
-            Date
-        )
+        Studio = studio_name
+        class_item = {'classname' : className,
+                   'instructor' : Instructor,
+                   'price'  : Price,
+                   'time' : Time,
+                   'length' : Length,
+                   'date' : Date,
+                   'studio' : studio_name}
+        # print(f"type of class_item:{type(class_item)}")
         class_list.append(class_item)
     end = time.time()
     length = end - start
@@ -94,7 +106,7 @@ def safe_find(element, xpath, default="N/A"):
 
 consent_clicked = False
 
-def scrape(driver, url):
+def scrape(driver, url, studio_name):
     global consent_clicked
     print("test")
     start = time.time()
@@ -129,9 +141,11 @@ def scrape(driver, url):
     
     # Find the day button and press it
     try:
-        print("Finding day button");
+        print("Finding day buttons");
         day_button_elements = entire_week_button_container.find_elements(By.XPATH, './/div[contains(@class, "column")]')
-        print(len(day_button_elements))
+        day_texts = [button.text.strip() for button in day_button_elements]
+        print("Day buttons found:", day_texts)  
+        print(f"amount of day buttons found: {len(day_button_elements)}")
     except TimeoutException:
         print("Timeout waiting for day button container")
         return []
@@ -148,12 +162,15 @@ def scrape(driver, url):
             continue
         try:
             WebDriverWait(driver, 5).until(EC.element_to_be_clickable(button))
-            actions.move_to_element(button).click().perform()
+            actions.move_to_element(to_element=button).click().perform()
             print(f"Day button for {day_text} clicked")
-            classes = scrape_class_data(driver)
+            classes = scrape_class_data(driver, studio_name)
+            print(f"Found {len(classes)} classes for {day_text}")
             if classes:
                 # using the date from the first scraped record as key (adjust index based on your tuple)
-                scraped_date = classes[0][-1]
+                scraped_date = classes[0].get('date')
+                # print(classes[0]) # debug statement to show what class is printing
+                print(f"scraped date:{scraped_date}")
                 if scraped_date in processed_dates:
                     print(f"Skipping duplicate date: {scraped_date}")
                     continue
@@ -169,18 +186,21 @@ def scrape(driver, url):
     print("\nIt took", end - start, "seconds to scrape an entire week of classes!")
     return all_classes
 
-
 websites = [
-    ("https://www.mindbodyonline.com/explore/locations/tmilly-studio", "INSERT INTO tmilly (classname, instructor, price, time, length, date) VALUES (%s, %s, %s, %s, %s, %s)"),
-    ("https://www.mindbodyonline.com/explore/locations/movement-lifestyle-noho", "INSERT INTO ml (classname, instructor, price, time, length, date) VALUES (%s, %s, %s, %s, %s, %s)"),
-    ("https://www.mindbodyonline.com/explore/locations/millennium-dance-complex-studio-city", "INSERT INTO mdc (classname, instructor, price, time, length, date) VALUES (%s, %s, %s, %s, %s, %s)")
+    {
+        'studio_name': 'TMILLY',
+        'studio_url': 'https://www.mindbodyonline.com/explore/locations/tmilly-studio'
+    },
+    {
+        'studio_name': 'MDC',
+        'studio_url': 'https://www.mindbodyonline.com/explore/locations/millennium-dance-complex-studio-city'
+    },
+    {
+        'studio_name': 'ML',
+        'studio_url': 'https://www.mindbodyonline.com/explore/locations/movement-lifestyle-noho'
+    }
 ]
 
-for table in ["mdc", "ml", "tmilly"]:
-    mycursor.execute(f"DELETE FROM {table}")
-    mycursor.execute(f"ALTER TABLE {table} AUTO_INCREMENT = 1")
-
-mydb.commit()
 
 try:
     op = webdriver.ChromeOptions()
@@ -189,24 +209,30 @@ try:
     op.add_argument('--log-level=3')
     driver = webdriver.Chrome(options=op)
 
-    for url, sql in websites:
+    for studio in websites:
         try:
-            class_data = scrape(driver, url)
-            print(f"Entering data for {url}")
-            mycursor.executemany(sql, class_data)
-            print(f"Completed {url.split('/')[-1]}:")
+            class_data = scrape(driver, studio.get('studio_url'), studio.get('studio_name'))
+            # print(type(class_data))
+            print(f"inserting 1 week of class data for {studio.get('studio_url')}")
+            try:
+                response = (
+                supabase.table("danceClassStorage")
+                .insert(class_data)
+                .execute()
+                )
+                print("import dictionary of classes sucess")
+            except Exception as e:
+                print("Error insertingss:", str(e))
+            print(f"Completed {studio.get('studio_url')}:")
         except Exception as e:
-            print(f"Error processing {url}: {str(e)}")
-            
-    mydb.commit()
+            print(f"Error processing {studio.get('studio_url')}: {str(e)}")
+
     print("\nAll operations completed")
-    print(f"{mycursor.rowcount} records inserted.")
+
     
 finally:
     # Clean up resources
     driver.quit()
-    mycursor.close()
-    mydb.close()
     
 end = time.time()
 print(f"\nTotal execution time: {end - start} seconds")
