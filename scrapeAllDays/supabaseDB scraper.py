@@ -1,5 +1,5 @@
 # working on converting script to use supabase database, not mysql to be used with web app Class Connect.
-# Date 4/7/2025 12:36 AM
+# Date 4/9/2025 12:36 AM
 # Derek Trauner
 import time
 import os
