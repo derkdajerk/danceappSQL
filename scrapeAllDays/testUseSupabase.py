@@ -84,16 +84,15 @@ def scrape_class_data(driver, studio_name):
         Instructor = safe_find(element, './/a[contains(@class, "ClassTimeScheduleItemDetails_link__1gju5")]')
         Price = safe_find(element, './/p[contains(@class, "Price_price__295Er Price_priceFont__1nZCw")]')
         Time = safe_find(element, './/h5[contains(@class, "has-text-primary is-marginless")]')
+        Time_formatted = datetime.strptime(Time.strip().lower(), "%I:%M%p").time().isoformat()
         Length = safe_find(element, './/p[contains(@class, "ClassTimeScheduleItemDesktop_endTime__26mcG")]', "N/A").replace("(", "").replace(")", "")
-        Studio = studio_name
         class_item = {'classname' : className,
                    'instructor' : Instructor,
                    'price'  : Price,
-                   'time' : Time,
+                   'time' : Time_formatted,
                    'length' : Length,
                    'date' : Date_formatted,
-                   'studio' : studio_name,
-                   'studio_names' : studio_name}
+                   'studio_name' : studio_name}
         # print(f"type of class_item:{type(class_item)}")
         class_list.append(class_item)
     end = time.time()
