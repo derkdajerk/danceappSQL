@@ -3,6 +3,7 @@
 # Derek Trauner
 import time
 import os
+from datetime import datetime
 from supabase import create_client, Client
 from supabase.client import ClientOptions
 from selenium import webdriver
@@ -71,6 +72,7 @@ def scrape_class_data(driver, studio_name):
     try:
         Date = driver.find_element(By.XPATH, '//h5[contains(@class, "is-marginless")]').text
         Date = Date[11:len(Date)]
+        Date_formatted = datetime.strptime(Date + f", {datetime.now().year}", "%A, %B %d, %Y").date().isoformat()
         print(Date)
     except NoSuchElementException:
         print("Date not found")
@@ -89,8 +91,9 @@ def scrape_class_data(driver, studio_name):
                    'price'  : Price,
                    'time' : Time,
                    'length' : Length,
-                   'date' : Date,
-                   'studio' : studio_name}
+                   'date' : Date_formatted,
+                   'studio' : studio_name,
+                   'studio_names' : studio_name}
         # print(f"type of class_item:{type(class_item)}")
         class_list.append(class_item)
     end = time.time()
