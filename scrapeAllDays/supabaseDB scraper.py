@@ -201,6 +201,14 @@ websites = [
     {
         'studio_name': 'ML',
         'studio_url': 'https://www.mindbodyonline.com/explore/locations/movement-lifestyle-noho'
+    },
+    {
+        'studio_name': 'EIGHTYEIGHT',
+        'studio_url': 'https://www.mindbodyonline.com/explore/locations/eighty-eight-studios'
+    },
+    {
+        'studio_name': 'PLAYGROUND',
+        'studio_url': 'https://www.mindbodyonline.com/explore/locations/the-playground-la'
     }
 ]
 
