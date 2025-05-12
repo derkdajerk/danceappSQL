@@ -216,6 +216,7 @@ websites = [
 try:
     op = webdriver.ChromeOptions()
     op.add_argument('headless')
+    op.add_argument("--window-size=1920,1080")
     op.page_load_strategy = 'none'
     op.add_argument('--log-level=3')
     driver = webdriver.Chrome(options=op)

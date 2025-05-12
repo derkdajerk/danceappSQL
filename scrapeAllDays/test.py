@@ -1,21 +1,31 @@
-from datetime import datetime
+import os
+from supabase import create_client, ClientOptions
 
-def convert_12h_to_24h_string(time_str):
-    # Parse string like "8:30am" to a time object
-    return datetime.strptime(time_str.strip().lower(), "%I:%M%p").time().isoformat()
+URL, API = os.environ["SUPABASE_URL"], os.environ["SUPABASE_SERVICE_KEY"]
 
-# Example
-original = "8:30pm"
-converted = convert_12h_to_24h_string(original)
-print(converted)  # '20:30:00'
+# 1) create the user with metadata
+admin = create_client(URL, API, options=ClientOptions(schema="public"))
+# admin.auth.admin.create_user({
+#     "email": "derek@derektrauner.com",
+#     "password": "scraper123",
+#     "user_metadata": {"role": "scraper"},
+#     "email_confirm": True
+# })
 
-# Then insert into Supabase as a string
-data = {
-    "class_time": converted  # Supabase TIME column
-}
+# 2) sign in as that user to get their JWT
+user_client = create_client(URL, API)
+res = user_client.auth.sign_in_with_password({
+    "email": "derek@derektrauner.com",
+    "password": "scraper123"
+})
+token = res.session.access_token
 
-def convert_24h_to_12h_string(time_str):
-    return datetime.strptime(time_str, "%H:%M:%S").strftime("%I:%M%p").lstrip("0").lower()
+# 3) attach JWT so RLS applies
+user_client.postgrest.auth(token)
 
-# Example
-print(convert_24h_to_12h_string("20:30:00"))  # '8:30pm'
+# 4) perform insert – policy WILL check `role = 'scraper'`
+resp = user_client.table("danceClassStorage").insert({
+    "classname": "Hip-Hop 101",
+}).execute()
+
+print(resp)
